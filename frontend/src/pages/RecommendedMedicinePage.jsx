@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 function RecommendedMedicinePage() {
   const [medicines, setMedicines] = useState([]);
   useEffect(() => {
-    fetch("http://localhost:5000/api/medicines")
+    fetch("https://stray-care-backend.vercel.app/api/medicines")
       .then(res => res.json())
       .then(data => setMedicines(data));
   }, []);
