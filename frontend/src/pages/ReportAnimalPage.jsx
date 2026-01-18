@@ -10,7 +10,7 @@ function ReportAnimalPage() {
     formData.append("description", description);
     formData.append("location", location);
     formData.append("image", image);
-    await fetch("https://stray-care-backend.vercel.app/api/animalReports", {
+    await fetch("http://localhost:5000/api/animalReports", {
       method: "POST",
       body: formData,
     });

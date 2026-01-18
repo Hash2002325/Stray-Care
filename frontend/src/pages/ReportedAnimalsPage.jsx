@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 function ReportedAnimalsPage() {
   const [reports, setReports] = useState([]);
   const [recommendations, setRecommendations] = useState({});
@@ -7,7 +7,7 @@ function ReportedAnimalsPage() {
   const [editValues, setEditValues] = useState({});
 
   const fetchRecommendations = async () => {
-    const res = await fetch("https://stray-care-backend.vercel.app/api/medicines");
+    const res = await fetch("http://localhost:5000/api/medicines");
     const data = await res.json();
     const recs = {};
     data.forEach(med => {
