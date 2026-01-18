@@ -9,13 +9,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
-            steps {
-                git branch: 'main',
-                    url: 'https://github.com/Hash2002325/Stray-Care.git'
-            }
-        }
-
         stage('Build Backend Docker Image') {
             steps {
                 sh 'docker build -t $DOCKERHUB_USER/$BACKEND_IMAGE:latest ./backend'
@@ -50,10 +43,10 @@ pipeline {
 
     post {
         success {
-            echo '✅ CI Pipeline completed successfully. Images pushed to Docker Hub.'
+            echo ' CI Pipeline completed successfully. Images pushed to Docker Hub.'
         }
         failure {
-            echo '❌ CI Pipeline failed. Check logs.'
+            echo ' CI Pipeline failed. Check logs.'
         }
     }
 }
