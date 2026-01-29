@@ -1,0 +1,140 @@
+---
+- name: Deploy Stray Care Application
+  hosts: webservers
+  become: yes
+
+  vars:
+    dockerhub_user: "hash2002325"
+    backend_image: "backend"
+    frontend_image: "frontend"
+    mongo_uri: "mongodb+srv://hovitigala:Hasala2025Db@cluster0.tx6ie.mongodb.net/?retryWrites=true&appName=Cluster0"
+    api_url: "http://54.159.28.162:5000"
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+        update_cache: yes
+
+    - name: Start and enable Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Install Docker SDK for Python (Ubuntu-safe)
+      apt:
+        name: python3-docker
+        state: present
+        update_cache: yes
+
+    - name: Install Docker Compose
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-x86_64"
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+
+    - name: Create application directory
+      file:
+        path: /home/ubuntu/straycare
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Create docker-compose.yml
+      copy:
+        content: |
+          version: '3.8'
+          services:
+            backend:
+              image: {{ dockerhub_user }}/{{ backend_image }}:latest
+              ports:
+                - "5000:5000"
+              environment:
+                - MONGO_URI={{ mongo_uri }}
+                - PORT=5000
+              restart: unless-stopped
+
+            frontend:
+              image: {{ dockerhub_user }}/{{ frontend_image }}:latest
+              ports:
+                - "80:80"
+              environment:
+                - REACT_APP_API_URL={{ api_url }}
+              depends_on:
+                - backend
+              restart: unless-stopped
+        dest: /home/ubuntu/straycare/docker-compose.yml
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+
+    - name: Pull latest Docker images
+      community.docker.docker_image:
+        name: "{{ item }}"
+        source: pull
+        force_source: yes
+      loop:
+        - "{{ dockerhub_user }}/{{ backend_image }}:latest"
+        - "{{ dockerhub_user }}/{{ frontend_image }}:latest"
+
+    - name: Stop existing containers (Docker Compose v2)
+      command: docker compose down
+      args:
+        chdir: /home/ubuntu/straycare
+      ignore_errors: yes
+
+    - name: Start application with Docker Compose v2
+      command: docker compose up -d --pull always
+      args:
+        chdir: /home/ubuntu/straycare
+
+    - name: Wait for backend to be healthy
+      wait_for:
+        host: localhost
+        port: 5000
+        delay: 5
+        timeout: 60
+
+    - name: Wait for frontend to be healthy
+      wait_for:
+        host: localhost
+        port: 80
+        delay: 5
+        timeout: 60

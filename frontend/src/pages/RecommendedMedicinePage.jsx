@@ -1,8 +1,9 @@
+import API_URL from '../config';
 import { useEffect, useState } from "react";
 function RecommendedMedicinePage() {
   const [medicines, setMedicines] = useState([]);
   useEffect(() => {
-    fetch("http://localhost:5000/api/medicines")
+    fetch(`${API_URL}/api/medicines`)
       .then(res => res.json())
       .then(data => setMedicines(data));
   }, []);

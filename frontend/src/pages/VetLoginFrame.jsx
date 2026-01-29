@@ -1,3 +1,4 @@
+import API_URL from '../config';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -10,7 +11,7 @@ function VetLoginFrame() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const res = await fetch("http://localhost:5000/api/vets/login", {
+    const res = await fetch(`${API_URL}/api/vets/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password })

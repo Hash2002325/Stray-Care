@@ -47,3 +47,22 @@ StrayCare
 backend/node_modules/
 backend/build/
 backend/.env
+
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/.terraform/...
+
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/terraform.tfvars
+
+# Node
+node_modules/
+
+# Build
+dist/
+build/
+.env

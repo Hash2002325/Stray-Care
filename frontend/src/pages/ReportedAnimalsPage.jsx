@@ -1,3 +1,4 @@
+import API_URL from '../config';
 import React, { useEffect, useState } from 'react';
 function ReportedAnimalsPage() {
   const [reports, setReports] = useState([]);
@@ -7,7 +8,7 @@ function ReportedAnimalsPage() {
   const [editValues, setEditValues] = useState({});
 
   const fetchRecommendations = async () => {
-    const res = await fetch("http://localhost:5000/api/medicines");
+    const res = await fetch(`${API_URL}/api/medicines`);
     const data = await res.json();
     const recs = {};
     data.forEach(med => {
@@ -18,7 +19,7 @@ function ReportedAnimalsPage() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/animalReports")
+    fetch(`${API_URL}/api/animalReports`)
       .then(res => res.json())
       .then(data => setReports(data));
     fetchRecommendations();
@@ -41,7 +42,7 @@ function ReportedAnimalsPage() {
 
   const handleEditSave = async (id) => {
     const { description, location } = editValues[id];
-    const res = await fetch(`http://localhost:5000/api/animalReports/${id}`, {
+    const res = await fetch(`${API_URL}/api/animalReports/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ description, location })
@@ -62,7 +63,7 @@ function ReportedAnimalsPage() {
   const handleRecommendationSubmit = async (id) => {
     const medicine = recommendations[id];
     if (!medicine) return;
-    await fetch("http://localhost:5000/api/medicines", {
+    await fetch(`${API_URL}/api/medicines`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ animalReportId: id, medicine })
@@ -72,7 +73,7 @@ function ReportedAnimalsPage() {
   };
 
   const handleDeleteReport = async (id) => {
-    await fetch(`http://localhost:5000/api/animalReports/${id}`, {
+    await fetch(`${API_URL}/api/animalReports/${id}`, {
       method: "DELETE"
     });
     setReports(reports.filter(r => r._id !== id));
@@ -88,7 +89,7 @@ function ReportedAnimalsPage() {
               className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs"
               onClick={() => handleDeleteReport(report._id)}
             >Delete</button>
-            {report.image && <img src={`http://localhost:5000/uploads/${report.image}`} alt="Animal" className="w-full h-48 object-cover mb-2" />}
+            {report.image && <img src={`${API_URL}/uploads/${report.image}`} alt="Animal" className="w-full h-48 object-cover mb-2" />}
             {editMode[report._id] ? (
               <div className="mb-2">
                 <input

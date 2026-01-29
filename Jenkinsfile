@@ -39,6 +39,15 @@ pipeline {
                 sh 'docker push $DOCKERHUB_USER/$FRONTEND_IMAGE:latest'
             }
         }
+
+        stage('Deploy to EC2 using Ansible') {
+            steps {
+                sh '''
+                cd ansible
+                ansible-playbook -i inventory.ini playbooks/deploy.yml
+                '''
+            }
+        }
     }
 
     post {

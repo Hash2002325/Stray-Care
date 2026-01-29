@@ -1,3 +1,4 @@
+import API_URL from '../config';
 import { useState } from "react";
 function ReportAnimalPage() {
   const [description, setDescription] = useState("");
@@ -10,7 +11,7 @@ function ReportAnimalPage() {
     formData.append("description", description);
     formData.append("location", location);
     formData.append("image", image);
-    await fetch("http://localhost:5000/api/animalReports", {
+    await fetch(`${API_URL}/api/animalReports`, {
       method: "POST",
       body: formData,
     });

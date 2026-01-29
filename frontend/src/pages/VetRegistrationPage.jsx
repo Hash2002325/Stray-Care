@@ -1,3 +1,4 @@
+import API_URL from '../config';
 import { useState } from "react";
 
 function VetRegistrationPage() {
@@ -11,7 +12,7 @@ function VetRegistrationPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch("http://localhost:5000/api/vets", {
+    const res = await fetch(`${API_URL}/api/vets`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, contact, specialization, availability, username, password })
